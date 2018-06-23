@@ -51,3 +51,12 @@ listing %>%
   ggtitle( "Price of 505s over year boat was built " )
  
 ggsave("price-plot.jpeg")
+
+listing %>% 
+  ggplot( aes(year2, price, label = sail_num) ) +
+  geom_point() +
+  geom_smooth() +
+  ylab( "Price ($CAD @ 1.327*USD)" ) +
+  ggtitle( "Price of 505s over year boat was built " )
+
+ggsave("price-plot_smooth.jpeg")
