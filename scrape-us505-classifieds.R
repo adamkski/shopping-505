@@ -10,7 +10,7 @@ headers <- boats %>%
   
 listing <- headers %>% 
   separate( value, into = c("year", "builder", "sail_num", "location", "price", "photo_link"), sep = ".-.") %>% 
-  filter( !is.na(price))
+  filter( !is.na(price) | !str_detect(price, "$"))
 
 # add category
 listing <- listing %>% 
