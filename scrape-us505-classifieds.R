@@ -1,4 +1,5 @@
 library(tidyverse)
+library(modelr)
 library(rvest)
 boats <- read_html("http://www.usa505.org/classifieds")
 
@@ -42,10 +43,9 @@ rgb_cols <- c(
   )
 
 listing %>% 
-  ggplot( aes(year2, price, label = sail_num, color = cat) ) +
+  ggplot( aes(year2, price, label = sail_num, color = category) ) +
   geom_point() +
-  geom_smooth() +
-  geom_label( aes( fill = cat ), color = "black", fontface = "bold", size = 3, angle = 45, hjust = 0, nudge_x = 125 ) +
+  geom_label( aes( fill = category ), color = "black", fontface = "bold", size = 3, angle = 45, hjust = 0, nudge_x = 125 ) +
   scale_color_manual( values = rgb_cols ) +
   scale_fill_manual( values = rgb_cols ) +
   ylab( "Price ($CAD @ 1.327*USD)" ) +
@@ -61,3 +61,33 @@ listing %>%
   ggtitle( "Price of 505s over year boat was built " )
 
 ggsave("price-plot_smooth.jpeg")
+
+
+listing
+# fit models
+mod1 <- lm( price ~ year, listing)
+mod2 <- loess( price ~ year, listing )
+
+grid <- listing %>% 
+  data_grid( year ) %>% 
+  add_predictions(mod1)
+
+listing %>% 
+  ggplot( aes( year )) +
+  geom_point( aes(y=price) ) +
+  geom_line( aes( y = pred ), data = grid, colour = "red", size = 1)
+
+listing %>%
+  gather_residuals( mod1, mod2 ) %>% 
+  ggplot( aes( resid )) +
+  facet_wrap( ~model) +
+  geom_freqpoly()
+
+listing %>%
+  gather_residuals( mod1, mod2 ) %>% 
+  ggplot( aes( year, resid )) +
+  facet_wrap( ~model) +
+  geom_point()
+
+
+# fit loess model

@@ -1,13 +1,16 @@
 
-shopping-505
-============
+International 505 Classifieds Aids
+==================================
 
-Some aids to shopping for an international 505
+International 505s tend to be sold through purpose specific sites. These visual aids help summarise the information found on the site.
 
 Plots of price
 --------------
 
-A plot showing the various prices of boats from <http://www.usa505.org/classifieds>. ![chart](price-plot.jpeg)
+A plot showing the various prices of boats from <http://www.usa505.org/classifieds> (last updated June 7, 2018). Listing categories organize boats into 5 levels of typical boat description and price points.
+
+![chart](price-plot.jpeg)
 
 The same plot showing a smoothing line to help see patterns of over / under priced boats.
+
 ![chart2](price-plot_smooth.jpeg)
