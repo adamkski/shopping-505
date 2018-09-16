@@ -2,25 +2,26 @@ library(tidyverse)
 library(rvest)
 boats <- read_html("http://www.usa505.org/classifieds")
 
-headers <- boats %>%
-  html_nodes("h4") %>%
-  html_text() %>% 
-  as_tibble() %>% 
-  filter( str_detect( value, "^\\d{4}"))
-  
-listing <- headers %>% 
-  separate( value, into = c("year", "builder", "sail_num", "location", "price", "photo_link"), sep = ".-.") %>% 
-  filter( !is.na(price) | !str_detect(price, "$"))
+# select headers by bk color
+extract_category <- function(cat, colour, data) {
+  data %>% 
+    html_nodes( paste0("[style~='background-color:", colour,"']") ) %>% 
+    html_text() %>% 
+    as_tibble() %>% 
+    mutate( category = cat )
+}
 
-# add category
-listing <- listing %>% 
-  mutate( cat = as.factor(case_when(
-    sail_num %in% c("5818","3061") ~ "1",
-    sail_num %in% c("8240","8244","8194") ~ "2",
-    sail_num %in% c("7877","6821","7347","7776","8438","7197","8013","8190","7318","7879") ~ "3",
-    sail_num %in% c("8559","8627","8083","8821","7875","8265") ~ "4",
-    sail_num %in% c("8824","8813","8851","8951","8853","9165","9187") ~ "5"
-  )))
+headers <- bind_rows(
+  extract_category("1", "rgb(159,197,232)", boats), 
+  extract_category("2", "rgb(182,215,168)", boats),
+  extract_category("3", "rgb(255,229,153)", boats),
+  extract_category("4", "rgb(249,203,156)", boats),
+  extract_category("5", "rgb(234,153,153)", boats)
+)
+
+
+listing <- headers %>% 
+  separate( value, into = c("year", "builder", "sail_num", "location", "price", "photo_link"), sep = ".-.") 
 
 # clean and convert price to CAD
 listing <- listing %>% 
